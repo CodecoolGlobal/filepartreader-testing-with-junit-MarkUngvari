@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -10,38 +11,49 @@ public class FileWordAnalyzer {
         this.reader = reader;
     }
 
+    private List<String> generateWordList(){
+        String text = null;
+        try {
+            text = reader.readLines();
+            return Arrays.asList(text.split(" "));
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
     public List<String> getWordsOrderedAlphabetically() {
-        String text = reader.readLines();
-        List<String> words = Arrays.asList(text.split(" "));
-        Collections.sort(words);
+        List<String> words = generateWordList();
+        Collections.sort(words, String.CASE_INSENSITIVE_ORDER);
         return words;
     }
 
     public List<String> getWordsContainingSubstring(String substring) {
-        String text = reader.readLines();
-        List<String> words = Arrays.asList(text.split(" "));
+        List<String> words = generateWordList();
+        List<String> result = new ArrayList<>();
         for (String word :
                 words) {
-            if (!word.contains(substring)) {
-                words.remove(word);
+            if (word.contains(substring)) {
+                result.add(word);
             }
         }
-        return words;
+        return result;
     }
 
     public List<String> getStringWhichPalindromes() {
-        String text = reader.readLines();
-        List<String> words = Arrays.asList(text.split(" "));
+        List<String> words = generateWordList();
+        List<String> result = new ArrayList<>();
         for (String word :
                 words) {
             int n = word.length();
             for (int i = 0; i < n; i++) {
-                if (word.charAt(i) != word.charAt(n - i - 1)) {
-                    words.remove(word);
+                if (word.toLowerCase().charAt(i) == word.toLowerCase().charAt(n - i - 1)) {
+                    result.add(word);
+                    break;
                 }
+                break;
             }
         }
-        return words;
+        return result;
 
     }
 

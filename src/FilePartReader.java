@@ -9,8 +9,6 @@ public class FilePartReader {
     private Integer fromLine;
     private Integer toLine;
 
-    private IllegalArgumentException IllegalArgumentException;
-
 
     public FilePartReader() {
         filepath = "invalid";
@@ -20,35 +18,36 @@ public class FilePartReader {
 
     public void setup(String filepath, Integer fromLine, Integer toLine) throws IllegalArgumentException {
         if (fromLine < 1 || toLine < fromLine) {
-            throw IllegalArgumentException;
+            throw new IllegalArgumentException("Invalid numbers");
         }
         this.filepath = filepath;
         this.fromLine = fromLine;
         this.toLine = toLine;
     }
 
-    public String read() {
+    public String read() throws IOException{
         try {
-            return Files.readString(Paths.get(filepath));
+            byte[] encoded = Files.readAllBytes(Paths.get(filepath));
+            return new String(encoded);
         } catch (IOException e) {
-            System.out.println("Error! Can't read file!\n" + e);
+            throw new IOException("File not found");
         }
-        return "";
     }
 
-    public String readLines() {
+    public String readLines() throws IOException{
         List<String> text = new ArrayList<>();
+        StringBuilder sb = new StringBuilder();
         try {
             text = Files.readAllLines(Paths.get(filepath));
         } catch (IOException e) {
-            System.out.println("Error! Can't read file!\n" + e);
+            throw new IOException("File not found");
         }
         for (String line : text) {
-            if (text.indexOf(line) < fromLine || text.indexOf(line) > toLine){
-                text.remove(line);
+            if (text.indexOf(line) >= fromLine-1 && text.indexOf(line) <= toLine-1){
+                sb.append(line+" ");
             }
         }
-        return text.toString();
+        return sb.toString().trim();
     }
 
 }
